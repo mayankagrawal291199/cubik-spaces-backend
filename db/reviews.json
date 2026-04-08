@@ -1,0 +1,20 @@
+[
+  {
+    "id": "bebd1924-8e32-45bb-a59e-5a282bbd8e85",
+    "author": "Priya Sharma",
+    "loc": "Mumbai · Residential",
+    "rating": 5,
+    "initials": "PS",
+    "text": "The Cubik Spaces completely transformed our home. Extraordinary attention to detail.",
+    "createdAt": "2026-04-07T10:00:38.579Z"
+  },
+  {
+    "id": "e71c66d6-defc-4661-b555-57adef59a5f7",
+    "author": "Rahul Mehta",
+    "loc": "Delhi · Commercial",
+    "rating": 5,
+    "initials": "RM",
+    "text": "Working with them on our restaurant redesign was a dream. Guests absolutely love it.",
+    "createdAt": "2026-04-07T10:00:38.579Z"
+  }
+]

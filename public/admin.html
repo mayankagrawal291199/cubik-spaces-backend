@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — The Cubik Spaces</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@200;300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;--gold-light:#E8C97A;
+  --dark:#0A0A08;--dark2:#111110;--dark3:#1A1A18;
+  --cream:#F5F0E8;--text:#D4CFC4;--muted:#888880;
+  --border:rgba(201,168,76,0.15);--border2:rgba(201,168,76,0.35);
+  --success:#4CAF50;--error:#e74c3c;--warn:#f39c12;
+  --sidebar:230px;
+}
+body{background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:var(--dark);z-index:999;display:flex;align-items:center;justify-content:center}
+.login-box{width:420px;background:var(--dark2);border:1px solid var(--border);padding:52px}
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--gold);letter-spacing:5px;text-align:center;margin-bottom:6px}
+.login-sub{text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:44px}
+.login-field{margin-bottom:24px}
+.login-field label{display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.login-field input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border2);padding:10px 0;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.3s}
+.login-field input:focus{border-color:var(--gold)}
+.login-btn{width:100%;background:var(--gold);color:var(--dark);border:none;padding:15px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all 0.3s;margin-top:12px}
+.login-btn:hover{background:var(--gold-light)}
+.login-error{color:var(--error);font-size:12px;text-align:center;margin-top:12px;display:none}
+.login-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:16px;opacity:0.7}
+.api-indicator{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:20px;font-size:11px;color:var(--muted)}
+.api-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.api-dot.connected{background:var(--success);box-shadow:0 0 6px var(--success)}
+
+/* LAYOUT */
+.admin-layout{display:flex;min-height:100vh}
+#adminMain{display:none}
+.sidebar{width:var(--sidebar);background:var(--dark2);border-right:1px solid var(--border);position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:50;overflow:hidden}
+.sidebar-logo{padding:28px 24px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sidebar-logo-text{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:var(--gold);letter-spacing:3px}
+.sidebar-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.sidebar-nav{flex:1;padding:20px 0;overflow-y:auto}
+.nav-section-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:8px 24px 4px}
+.sidebar-item{display:flex;align-items:center;gap:12px;padding:12px 24px;cursor:pointer;transition:all 0.2s;border-left:2px solid transparent;font-size:13px;color:var(--muted);font-weight:300;white-space:nowrap}
+.sidebar-item:hover{color:var(--cream);background:rgba(201,168,76,0.04);border-left-color:rgba(201,168,76,0.3)}
+.sidebar-item.active{color:var(--gold);background:rgba(201,168,76,0.06);border-left-color:var(--gold);font-weight:400}
+.sico{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.3}
+.sbadge{margin-left:auto;background:var(--gold);color:var(--dark);font-size:9px;font-weight:700;padding:2px 6px;min-width:18px;text-align:center}
+.sidebar-footer{padding:18px 24px;border-top:1px solid var(--border);flex-shrink:0}
+.user-row{display:flex;align-items:center;gap:10px}
+.uavatar{width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,0.12);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gold);flex-shrink:0}
+.uname{font-size:13px;color:var(--cream);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.urole{font-size:9px;color:var(--muted)}
+.logout-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;transition:color 0.2s;padding:4px;flex-shrink:0}
+.logout-btn:hover{color:var(--error)}
+
+/* MAIN */
+.main-content{margin-left:var(--sidebar);flex:1}
+.topbar{background:var(--dark2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;gap:12px}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--cream);white-space:nowrap}
+.topbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.topbar-date{font-size:11px;color:var(--muted);white-space:nowrap}
+.api-status{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);letter-spacing:1px}
+.api-status-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:background 0.3s}
+.api-status-dot.ok{background:var(--success)}
+.api-status-dot.err{background:var(--error)}
+.btn-gold{background:var(--gold);color:var(--dark);border:none;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all 0.3s;white-space:nowrap}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-gold:disabled{opacity:0.5;cursor:not-allowed}
+.btn-sm{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.3s;white-space:nowrap}
+.btn-sm:hover{border-color:var(--gold);color:var(--gold)}
+.btn-danger{border-color:rgba(231,76,60,0.3);color:rgba(231,76,60,0.7)}
+.btn-danger:hover{border-color:var(--error);color:var(--error)}
+
+/* CONTENT */
+.content{padding:28px}
+.page{display:none}.page.active{display:block}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:var(--dark2);border:1px solid var(--border);padding:22px 24px}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--gold);line-height:1}
+.stat-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.stat-note{font-size:11px;color:var(--success);margin-top:6px}
+
+/* CARD */
+.card{background:var(--dark2);border:1px solid var(--border);margin-bottom:20px}
+.card-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:13px;color:var(--cream);font-weight:400;letter-spacing:1px;white-space:nowrap}
+.card-body{padding:22px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:400;padding:0 14px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:13px 14px;font-size:13px;color:var(--text);border-bottom:1px solid rgba(201,168,76,0.05);vertical-align:middle}
+tr:hover td{background:rgba(201,168,76,0.025)}
+tr:last-child td{border-bottom:none}
+.td-img{width:56px;height:44px;object-fit:cover;border:1px solid var(--border);display:block}
+.td-vid{width:56px;height:44px;object-fit:cover;border:1px solid rgba(63,140,255,0.3);display:block}
+.no-media{width:56px;height:44px;background:var(--dark3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--muted);letter-spacing:1px}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 9px;font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.b-new{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid var(--border2)}
+.b-progress{background:rgba(63,140,255,0.1);color:#5b9cf6;border:1px solid rgba(63,140,255,0.2)}
+.b-done{background:rgba(76,175,80,0.1);color:var(--success);border:1px solid rgba(76,175,80,0.2)}
+.b-read{background:rgba(136,136,128,0.15);color:var(--muted);border:1px solid var(--border)}
+
+/* ACTION BUTTONS */
+.abt{background:none;border:none;cursor:pointer;padding:3px 7px;font-size:12px;font-family:'DM Sans',sans-serif;transition:color 0.2s;letter-spacing:0.5px}
+.abt-edit{color:var(--gold)}.abt-edit:hover{color:var(--gold-light)}
+.abt-del{color:var(--muted)}.abt-del:hover{color:var(--error)}
+.abt-read{color:#5b9cf6}.abt-read:hover{color:#82b4ff}
+.actions-cell{white-space:nowrap}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--dark2);border:1px solid var(--border);width:640px;max-width:100%;margin:auto}
+.modal-header{padding:22px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--dark2);z-index:1}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--cream)}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;transition:color 0.2s;padding:0 4px}
+.modal-close:hover{color:var(--error)}
+.modal-body{padding:28px}
+.modal-footer{padding:14px 28px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--dark2)}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.form-grid .full{grid-column:span 2}
+.fg{margin-bottom:0}
+.fg label{display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.fc{width:100%;background:var(--dark);border:1px solid var(--border);padding:10px 13px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.3s;-webkit-appearance:none;border-radius:0}
+.fc:focus{border-color:var(--gold)}
+.fc option{background:var(--dark2)}
+textarea.fc{resize:vertical;min-height:80px}
+input[type="color"].fc{height:42px;padding:4px 8px;cursor:pointer}
+
+/* ═══════════════════════════════════════════════
+   MEDIA UPLOAD ZONE — the main upgrade
+═══════════════════════════════════════════════ */
+.upload-zone{border:1px dashed var(--border2);padding:0;transition:all 0.3s;position:relative;overflow:hidden}
+.upload-zone:hover{border-color:var(--gold)}
+.upload-zone.dragover{border-color:var(--gold);background:rgba(201,168,76,0.04)}
+.upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
+.upload-idle{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;gap:8px;pointer-events:none}
+.upload-icon{font-size:28px;opacity:0.4}
+.upload-title{font-size:12px;color:var(--cream);letter-spacing:1px}
+.upload-sub{font-size:11px;color:var(--muted);text-align:center}
+.upload-preview{display:none;position:relative;width:100%}
+.upload-preview img,.upload-preview video{width:100%;max-height:200px;object-fit:cover;display:block}
+.upload-remove{position:absolute;top:8px;right:8px;background:rgba(10,10,8,0.85);border:1px solid var(--border2);color:var(--error);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;z-index:3;transition:all 0.2s}
+.upload-remove:hover{background:var(--error);color:#fff}
+.upload-info{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--dark3);border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+.upload-badge{padding:2px 8px;font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.upload-badge.img{background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid var(--border)}
+.upload-badge.vid{background:rgba(63,140,255,0.1);color:#5b9cf6;border:1px solid rgba(63,140,255,0.2)}
+.upload-progress{position:absolute;bottom:0;left:0;height:2px;background:var(--gold);width:0;transition:width 0.3s;z-index:10}
+.existing-media{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--dark3);border:1px solid var(--border);margin-bottom:8px}
+.existing-thumb{width:56px;height:44px;object-fit:cover;flex-shrink:0}
+.existing-info{flex:1;min-width:0}
+.existing-name{font-size:12px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.existing-type{font-size:10px;color:var(--muted);margin-top:2px}
+.existing-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;transition:color 0.2s;flex-shrink:0;padding:4px}
+.existing-remove:hover{color:var(--error)}
+
+/* CHART */
+.bar-wrap{display:flex;flex-direction:column;gap:12px}
+.bar-row{display:flex;align-items:center;gap:12px}
+.bar-label{width:110px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0;white-space:nowrap}
+.bar-track{flex:1;height:3px;background:rgba(201,168,76,0.1)}
+.bar-fill{height:100%;background:var(--gold);transition:width 1s ease}
+.bar-val{width:30px;font-size:13px;color:var(--cream);font-family:'Cormorant Garamond',serif}
+
+/* ACTIVITY */
+.act-item{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid rgba(201,168,76,0.05)}
+.act-item:last-child{border-bottom:none}
+.act-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;margin-top:5px;flex-shrink:0}
+.act-text{font-size:12px;color:var(--text);line-height:1.5}
+.act-time{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dark2);border:1px solid var(--gold);padding:12px 20px;color:var(--cream);font-size:12px;z-index:9999;transform:translateX(200%);transition:transform 0.3s;letter-spacing:1px;max-width:320px}
+.toast.show{transform:translateX(0)}
+.toast.err{border-color:var(--error);color:var(--error)}
+
+/* LOADING SPINNER */
+.spinner{display:inline-block;width:14px;height:14px;border:1.5px solid rgba(201,168,76,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .form-grid,.form-grid .full{grid-template-columns:1fr;grid-column:span 1}
+  .content{padding:16px}
+  .topbar{padding:12px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">CUBIK</div>
+    <div class="login-sub">Admin Dashboard</div>
+    <div class="login-field"><label>Username</label><input id="lu" type="text" placeholder="admin" value="admin"></div>
+    <div class="login-field"><label>Password</label><input id="lp" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()" id="loginBtn">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">Default: admin / cubik2024</div>
+    <div class="api-indicator">
+      <div class="api-dot" id="loginDot"></div>
+      <span id="loginApiStatus">Checking API...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminMain">
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">THE CUBIK</div>
+      <div class="sidebar-sub">Admin Panel</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Overview</div>
+      <div class="sidebar-item active" onclick="nav('dashboard',this)">
+        <svg class="sico" viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/></svg>Dashboard
+      </div>
+      <div class="nav-section-title">Content</div>
+      <div class="sidebar-item" onclick="nav('projects',this)">
+        <svg class="sico" viewBox="0 0 16 16"><rect x="1" y="3" width="14" height="10"/><line x1="1" y1="6" x2="15" y2="6"/></svg>Projects
+      </div>
+      <div class="sidebar-item" onclick="nav('reviews',this)">
+        <svg class="sico" viewBox="0 0 16 16"><polygon points="8,1 10,6 15,6.5 11.5,10 12.5,15 8,12.5 3.5,15 4.5,10 1,6.5 6,6"/></svg>Reviews
+      </div>
+      <div class="sidebar-item" onclick="nav('services',this)">
+        <svg class="sico" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke-linecap="round"/></svg>Services
+      </div>
+      <div class="nav-section-title">CRM</div>
+      <div class="sidebar-item" onclick="nav('inquiries',this)">
+        <svg class="sico" viewBox="0 0 16 16"><rect x="1" y="3" width="14" height="10" rx="1"/><polyline points="1,4 8,9 15,4" fill="none"/></svg>Inquiries
+        <span class="sbadge" id="inqBadge" style="display:none">0</span>
+      </div>
+      <div class="nav-section-title">System</div>
+      <div class="sidebar-item" onclick="nav('settings',this)">
+        <svg class="sico" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4" stroke-linecap="round"/></svg>Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="uavatar">A</div>
+        <div><div class="uname" id="uname">Admin</div><div class="urole">Super Admin</div></div>
+        <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="api-status"><div class="api-status-dot" id="apiDot"></div><span id="apiLabel">API</span></div>
+        <span class="topbar-date" id="topDate"></span>
+        <a href="index.html" target="_blank" class="btn-sm">View Site ↗</a>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-val" id="ds-proj">—</div><div class="stat-lbl">Projects</div></div>
+          <div class="stat-card"><div class="stat-val" id="ds-inq">—</div><div class="stat-lbl">Inquiries</div><div class="stat-note" id="ds-new-inq"></div></div>
+          <div class="stat-card"><div class="stat-val" id="ds-rev">—</div><div class="stat-lbl">Reviews</div></div>
+          <div class="stat-card"><div class="stat-val">98%</div><div class="stat-lbl">Satisfaction</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Projects by Category</span></div>
+            <div class="card-body"><div class="bar-wrap" id="dashChart"><div style="color:var(--muted);font-size:12px">Loading...</div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Activity</span></div>
+            <div class="card-body" id="actFeed" style="padding:16px">
+              <div class="act-item"><div class="act-dot"></div><div><div class="act-text">Dashboard loaded</div><div class="act-time">Just now</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Inquiries</span><button class="btn-sm" onclick="nav('inquiries',null)">View All</button></div>
+          <div class="card-body" style="padding:0"><div class="table-wrap"><table><thead><tr><th>Client</th><th>Email</th><th>Type</th><th>Date</th><th>Status</th></tr></thead><tbody id="dashInqTbl"></tbody></table></div></div>
+        </div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="page" id="page-projects">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div style="font-size:12px;color:var(--muted)">Add projects with images &amp; videos — they appear live on the website.</div>
+          <button class="btn-gold" onclick="openProjModal()">+ Add Project</button>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0"><div class="table-wrap">
+            <table><thead><tr><th>Image</th><th>Video</th><th>Project</th><th>Category</th><th>Location</th><th>Year</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="projTbl"></tbody></table>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="page" id="page-reviews">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div style="font-size:12px;color:var(--muted)">Client testimonials shown on the website.</div>
+          <button class="btn-gold" onclick="openRevModal()">+ Add Review</button>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0"><div class="table-wrap">
+            <table><thead><tr><th>Client</th><th>Location</th><th>Rating</th><th>Review</th><th>Actions</th></tr></thead>
+            <tbody id="revTbl"></tbody></table>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- SERVICES -->
+      <div class="page" id="page-services">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div style="font-size:12px;color:var(--muted)">Services displayed on the website.</div>
+          <button class="btn-gold" onclick="openSvcModal()">+ Add Service</button>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0"><div class="table-wrap">
+            <table><thead><tr><th>Service</th><th>Description</th><th>Visible</th><th>Actions</th></tr></thead>
+            <tbody id="svcTbl"></tbody></table>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- INQUIRIES -->
+      <div class="page" id="page-inquiries">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div style="font-size:12px;color:var(--muted)">Contact form submissions from website visitors.</div>
+          <button class="btn-sm btn-danger" onclick="clearAllInq()">Clear All</button>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0"><div class="table-wrap">
+            <table><thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Budget</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="inqTbl"></tbody></table>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Studio Info</span></div>
+            <div class="card-body">
+              <div class="fg" style="margin-bottom:16px"><label>Studio Name</label><input class="fc" id="sName" placeholder="The Cubik Spaces"></div>
+              <div class="fg" style="margin-bottom:16px"><label>Tagline</label><input class="fc" id="sTagline" placeholder="Crafting Extraordinary Spaces"></div>
+              <div class="fg" style="margin-bottom:16px"><label>Email</label><input class="fc" id="sEmail" type="email"></div>
+              <div class="fg" style="margin-bottom:16px"><label>Phone</label><input class="fc" id="sPhone"></div>
+              <div class="fg" style="margin-bottom:20px"><label>Instagram Handle</label><input class="fc" id="sIG" placeholder="@the_cubik_spaces"></div>
+              <button class="btn-gold" onclick="saveSettings()">Save Settings</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Change Password</span></div>
+            <div class="card-body">
+              <div class="fg" style="margin-bottom:16px"><label>Current Password</label><input class="fc" type="password" id="curP"></div>
+              <div class="fg" style="margin-bottom:16px"><label>New Password</label><input class="fc" type="password" id="newP"></div>
+              <div class="fg" style="margin-bottom:20px"><label>Confirm Password</label><input class="fc" type="password" id="conP"></div>
+              <button class="btn-gold" onclick="changePass()">Update Password</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">API Connection</span></div>
+            <div class="card-body">
+              <div class="fg" style="margin-bottom:16px"><label>Backend API URL</label><input class="fc" id="apiUrlInput" placeholder="http://localhost:4000"></div>
+              <button class="btn-gold" onclick="reconnectAPI()" style="margin-right:8px">Connect</button>
+              <button class="btn-sm" onclick="exportData()">Export JSON</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="modal-overlay" id="projModal">
+<div class="modal">
+  <div class="modal-header">
+    <div class="modal-title" id="projModalTitle">Add Project</div>
+    <button class="modal-close" onclick="closeModal('projModal')">×</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="projId">
+    <div class="form-grid">
+      <div class="fg"><label>Project Name *</label><input class="fc" id="pName" placeholder="The Serene Residence"></div>
+      <div class="fg"><label>Category</label>
+        <select class="fc" id="pCat"><option>Residential</option><option>Commercial</option><option>Luxury</option><option>Hospitality</option><option>Office</option></select>
+      </div>
+      <div class="fg"><label>Location</label><input class="fc" id="pLoc" placeholder="Mumbai, India"></div>
+      <div class="fg"><label>Year</label><input class="fc" id="pYear" type="number" value="2024" min="2000" max="2030"></div>
+      <div class="fg full"><label>Description</label><textarea class="fc" id="pDesc" placeholder="Brief project description..."></textarea></div>
+      <div class="fg"><label>Status</label>
+        <select class="fc" id="pStatus"><option>Completed</option><option>In Progress</option><option>Featured</option></select>
+      </div>
+      <div class="fg"><label>Card Color</label><input class="fc" id="pColor" type="color" value="#1a1a18"></div>
+
+      <!-- IMAGE UPLOAD -->
+      <div class="fg full">
+        <label>Project Image — drag &amp; drop or click to browse</label>
+        <div id="imgExisting" style="display:none" class="existing-media">
+          <img id="imgExistingThumb" src="" class="existing-thumb">
+          <div class="existing-info">
+            <div class="existing-name" id="imgExistingName"></div>
+            <div class="existing-type">Current Image</div>
+          </div>
+          <button class="existing-remove" onclick="removeExistingImg()" title="Remove">×</button>
+        </div>
+        <div class="upload-zone" id="imgZone">
+          <input type="file" id="imgFile" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" multiple onchange="previewImg(this)">
+          <div class="upload-idle" id="imgIdle">
+            <div class="upload-icon">🖼</div>
+            <div class="upload-title">Upload Project Image</div>
+            <div class="upload-sub">JPG, PNG, WebP up to 50MB<br>Drag &amp; drop or click to browse from your folder</div>
+          </div>
+          <div class="upload-preview" id="imgPreview">
+            <img id="imgPreviewEl" src="" alt="">
+            <div class="upload-remove" onclick="clearImg()">×</div>
+            <div class="upload-info">
+              <span class="upload-badge img">IMAGE</span>
+              <span id="imgFileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+              <span id="imgFileSize"></span>
+            </div>
+          </div>
+          <div class="upload-progress" id="imgProgress"></div>
+        </div>
+      </div>
+
+      <!-- VIDEO UPLOAD -->
+      <div class="fg full">
+        <label>Project Video — drag &amp; drop or click to browse</label>
+        <div id="vidExisting" style="display:none" class="existing-media">
+          <video id="vidExistingThumb" src="" class="existing-thumb" muted></video>
+          <div class="existing-info">
+            <div class="existing-name" id="vidExistingName"></div>
+            <div class="existing-type">Current Video</div>
+          </div>
+          <button class="existing-remove" onclick="removeExistingVid()" title="Remove">×</button>
+        </div>
+        <div class="upload-zone" id="vidZone">
+          <input type="file" id="vidFile" accept="video/mp4,video/webm,video/mov,video/quicktime" onchange="previewVid(this)">
+          <div class="upload-idle" id="vidIdle">
+            <div class="upload-icon">🎬</div>
+            <div class="upload-title">Upload Project Video</div>
+            <div class="upload-sub">MP4, WebM, MOV up to 100MB<br>Drag &amp; drop or click to browse from your folder</div>
+          </div>
+          <div class="upload-preview" id="vidPreview">
+            <video id="vidPreviewEl" src="" controls muted style="width:100%;max-height:200px;display:block"></video>
+            <div class="upload-remove" onclick="clearVid()">×</div>
+            <div class="upload-info">
+              <span class="upload-badge vid">VIDEO</span>
+              <span id="vidFileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+              <span id="vidFileSize"></span>
+            </div>
+          </div>
+          <div class="upload-progress" id="vidProgress"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-sm" onclick="closeModal('projModal')">Cancel</button>
+    <button class="btn-gold" onclick="saveProject()" id="saveProjBtn">Save Project</button>
+  </div>
+</div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="revModal">
+<div class="modal">
+  <div class="modal-header">
+    <div class="modal-title" id="revModalTitle">Add Review</div>
+    <button class="modal-close" onclick="closeModal('revModal')">×</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="revId">
+    <div class="form-grid">
+      <div class="fg"><label>Client Name *</label><input class="fc" id="rName" placeholder="Priya Sharma"></div>
+      <div class="fg"><label>Location / Project</label><input class="fc" id="rLoc" placeholder="Mumbai · Residential"></div>
+      <div class="fg"><label>Rating</label>
+        <select class="fc" id="rRating"><option value="5">★★★★★ 5 Stars</option><option value="4">★★★★ 4 Stars</option><option value="3">★★★ 3 Stars</option></select>
+      </div>
+      <div class="fg"><label>Initials (2 chars)</label><input class="fc" id="rInit" placeholder="PS" maxlength="2"></div>
+      <div class="fg full"><label>Review Text *</label><textarea class="fc" id="rText" style="min-height:100px" placeholder="The Cubik Spaces completely transformed..."></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-sm" onclick="closeModal('revModal')">Cancel</button>
+    <button class="btn-gold" onclick="saveReview()">Save Review</button>
+  </div>
+</div>
+</div>
+
+<!-- SERVICE MODAL -->
+<div class="modal-overlay" id="svcModal">
+<div class="modal" style="width:480px">
+  <div class="modal-header">
+    <div class="modal-title">Service</div>
+    <button class="modal-close" onclick="closeModal('svcModal')">×</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="svcId">
+    <div class="fg" style="margin-bottom:16px"><label>Service Name *</label><input class="fc" id="svName" placeholder="Residential Design"></div>
+    <div class="fg" style="margin-bottom:16px"><label>Description *</label><textarea class="fc" id="svDesc" style="min-height:90px" placeholder="Service description..."></textarea></div>
+    <div class="fg"><label>Visibility</label>
+      <select class="fc" id="svVis"><option value="true">Visible on Website</option><option value="false">Hidden</option></select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-sm" onclick="closeModal('svcModal')">Cancel</button>
+    <button class="btn-gold" onclick="saveService()">Save</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════════
+let API = localStorage.getItem('cubik_api') || 'http://localhost:4000';
+let TOKEN = localStorage.getItem('cubik_token') || '';
+let MODE = 'offline'; // 'api' | 'offline'
+
+// ═══════════════════════════════════════════════════════════
+//  API HELPERS
+// ═══════════════════════════════════════════════════════════
+async function api(method, path, body, isFormData=false) {
+  const headers = {};
+  if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+  if (!isFormData && body) headers['Content-Type'] = 'application/json';
+  const opts = { method, headers };
+  if (body) opts.body = isFormData ? body : JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  if (!res.ok) {
+    const e = await res.json().catch(()=>({error:res.statusText}));
+    throw new Error(e.error || res.statusText);
+  }
+  return res.json();
+}
+
+async function checkAPI() {
+  try {
+    await fetch(API + '/api/projects', { signal: AbortSignal.timeout(2000) });
+    MODE = 'api';
+    updateApiStatus(true);
+    return true;
+  } catch {
+    MODE = 'offline';
+    updateApiStatus(false);
+    return false;
+  }
+}
+
+function updateApiStatus(ok) {
+  const dot = document.getElementById('apiDot');
+  const lbl = document.getElementById('apiLabel');
+  const ldot = document.getElementById('loginDot');
+  const lsts = document.getElementById('loginApiStatus');
+  if (dot) { dot.className = 'api-status-dot ' + (ok ? 'ok' : 'err'); lbl.textContent = ok ? 'API Connected' : 'Offline Mode'; }
+  if (ldot) { ldot.className = 'api-dot ' + (ok ? 'connected' : ''); lsts.textContent = ok ? 'API Connected — full features enabled' : 'Offline Mode — localStorage only'; }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  OFFLINE STORAGE (fallback when no backend)
+// ═══════════════════════════════════════════════════════════
+const DEF = {
+  projects:[
+    {id:'p1',name:'The Serene Residence',category:'Residential',location:'Mumbai, India',year:2024,desc:'A contemporary masterpiece blending warmth with minimalism.',status:'Completed',color:'#1e1a15',image:null,video:null},
+    {id:'p2',name:'Azure Corporate Hub',category:'Commercial',location:'Bangalore, India',year:2023,desc:'Open collaborative workspace redefining corporate culture.',status:'Completed',color:'#151820',image:null,video:null},
+    {id:'p3',name:'Opulent Villa Retreat',category:'Luxury',location:'Goa, India',year:2024,desc:'Stone, wood, and light in perfect harmony.',status:'Featured',color:'#1a1515',image:null,video:null},
+  ],
+  reviews:[
+    {id:'r1',author:'Priya Sharma',loc:'Mumbai · Residential',rating:5,initials:'PS',text:'The Cubik Spaces transformed our home completely. Extraordinary attention to detail.'},
+    {id:'r2',author:'Rahul Mehta',loc:'Delhi · Commercial',rating:5,initials:'RM',text:'Our restaurant redesign was a dream. Guests absolutely love it.'},
+  ],
+  services:[
+    {id:'s1',name:'Residential Design',desc:'Transform your home into a sanctuary.',visible:true},
+    {id:'s2',name:'Commercial Spaces',desc:'Offices and retail spaces that elevate brand.',visible:true},
+    {id:'s3',name:'3D Visualization',desc:'Photo-realistic renders before construction.',visible:true},
+    {id:'s4',name:'Lighting Design',desc:'Strategic lighting transforming mood.',visible:true},
+    {id:'s5',name:'Furniture Curation',desc:'Premium curation from global artisans.',visible:true},
+    {id:'s6',name:'Project Management',desc:'End-to-end coordination on time and budget.',visible:true},
+  ],
+  inquiries:[]
+};
+function lsGet(k){try{const d=JSON.parse(localStorage.getItem('cubik_'+k));return Array.isArray(d)?d:DEF[k]||[];}catch{return DEF[k]||[]}}
+function lsSet(k,v){localStorage.setItem('cubik_'+k,JSON.stringify(v))}
+let lsID=0;function nid(){return 'local_'+(++lsID)+'_'+Date.now()}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════
+async function doLogin() {
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value;
+  document.getElementById('loginBtn').innerHTML = '<span class="spinner"></span>Signing in...';
+  document.getElementById('loginError').style.display='none';
+
+  const apiOk = await checkAPI();
+  if (apiOk) {
+    try {
+      const res = await api('POST', '/api/auth/login', { username: u, password: p });
+      TOKEN = res.token;
+      localStorage.setItem('cubik_token', TOKEN);
+      document.getElementById('uname').textContent = res.user.name || res.user.username;
+      enterAdmin();
+    } catch(e) {
+      showLoginError(e.message || 'Invalid credentials');
+    }
+  } else {
+    // offline fallback
+    if (u === 'admin' && p === 'cubik2024') {
+      enterAdmin();
+    } else {
+      showLoginError('Invalid credentials. Default: admin / cubik2024');
+    }
+  }
+  document.getElementById('loginBtn').textContent = 'Sign In';
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function enterAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminMain').style.display = 'block';
+  init();
+}
+
+function logout() {
+  if (!confirm('Sign out?')) return;
+  TOKEN = ''; localStorage.removeItem('cubik_token');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminMain').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+async function init() {
+  document.getElementById('topDate').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('apiUrlInput').value = API;
+  await checkAPI();
+  loadDashboard();
+  loadProjects();
+  loadReviews();
+  loadServices();
+  loadInquiries();
+  loadSettings();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════════════════════
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if (el) el.classList.add('active');
+  const T={dashboard:'Dashboard',projects:'Projects',reviews:'Reviews',services:'Services',inquiries:'Inquiries',settings:'Settings'};
+  document.getElementById('pageTitle').textContent = T[id] || id;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════════
+async function loadDashboard() {
+  try {
+    if (MODE==='api') {
+      const stats = await api('GET', '/api/stats');
+      document.getElementById('ds-proj').textContent = stats.total.projects;
+      document.getElementById('ds-inq').textContent = stats.total.inquiries;
+      document.getElementById('ds-rev').textContent = stats.total.reviews;
+      const ni = stats.total.newInquiries;
+      document.getElementById('ds-new-inq').textContent = ni > 0 ? ni+' new' : '';
+      // chart
+      const cats = stats.byCategory;
+      const max = Math.max(...Object.values(cats),1);
+      document.getElementById('dashChart').innerHTML = Object.entries(cats).map(([k,v])=>`
+        <div class="bar-row"><div class="bar-label">${k}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%"></div></div>
+        <div class="bar-val">${v}</div></div>`).join('') || '<div style="color:var(--muted);font-size:12px">No projects yet</div>';
+      // recent
+      const ri = stats.recent.inquiries;
+      document.getElementById('dashInqTbl').innerHTML = ri.map(i=>`<tr><td>${i.name}</td><td style="color:var(--muted)">${i.email}</td><td><span class="badge b-new">${i.type||'—'}</span></td><td style="color:var(--muted)">${i.date}</td><td><span class="badge ${i.status==='New'?'b-new':'b-read'}">${i.status}</span></td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No inquiries yet</td></tr>';
+    } else {
+      // offline
+      const p=lsGet('projects'), i=lsGet('inquiries'), r=lsGet('reviews');
+      document.getElementById('ds-proj').textContent=p.length;
+      document.getElementById('ds-inq').textContent=i.length;
+      document.getElementById('ds-rev').textContent=r.length;
+      const cats={};p.forEach(x=>{cats[x.category]=(cats[x.category]||0)+1});
+      const max=Math.max(...Object.values(cats),1);
+      document.getElementById('dashChart').innerHTML=Object.entries(cats).map(([k,v])=>`<div class="bar-row"><div class="bar-label">${k}</div><div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%"></div></div><div class="bar-val">${v}</div></div>`).join('')||'<div style="color:var(--muted);font-size:12px">No projects</div>';
+      document.getElementById('dashInqTbl').innerHTML=i.slice(-5).reverse().map(x=>`<tr><td>${x.name}</td><td style="color:var(--muted)">${x.email}</td><td><span class="badge b-new">${x.type||'—'}</span></td><td style="color:var(--muted)">${x.date}</td><td><span class="badge ${x.status==='New'?'b-new':'b-read'}">${x.status}</span></td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No inquiries</td></tr>';
+    }
+  } catch(e) { toast('Dashboard error: '+e.message,'err'); }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PROJECTS
+// ═══════════════════════════════════════════════════════════
+let projects=[];
+async function loadProjects() {
+  try {
+    projects = MODE==='api' ? await api('GET','/api/projects') : lsGet('projects');
+    renderProjects();
+    updateBadge();
+  } catch(e) { projects=lsGet('projects'); renderProjects(); }
+}
+
+function renderProjects() {
+  const tb = document.getElementById('projTbl');
+  if (!projects.length) { tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">No projects yet. Add your first project!</td></tr>'; return; }
+  tb.innerHTML = projects.map(p=>{
+    const img0=p.images&&p.images.length?p.images[0]:null;
+    const vid0=p.videos&&p.videos.length?p.videos[0]:null;
+    const imgSrc=img0?(MODE==='api'?API+img0.path:img0.path):null;
+    const vidSrc=vid0?(MODE==='api'?API+vid0.path:vid0.path):null;
+    return `
+    <tr>
+      <td>${imgSrc?`<img src="${imgSrc}" class="td-img" onerror="this.style.display='none'">`:'<div class="no-media">—</div>'}</td>
+      <td>${vidSrc?`<video src="${vidSrc}" class="td-vid" muted>`:'<div class="no-media">—</div>'}</td>
+      <td><strong style="color:var(--cream)">${p.name}</strong><br><span style="color:var(--muted);font-size:11px">${p.desc?.slice(0,50)||''}${p.desc?.length>50?'...':''}</span></td>
+      <td><span class="badge b-new">${p.category}</span></td>
+      <td style="color:var(--muted)">${p.location||'—'}</td>
+      <td>${p.year}</td>
+      <td><span class="badge ${p.status==='Completed'?'b-done':p.status==='Featured'?'b-new':'b-progress'}">${p.status}</span></td>
+      <td class="actions-cell">
+        <button class="abt abt-edit" onclick="editProject('${p.id}')">Edit</button>
+        <button class="abt abt-del" onclick="deleteProject('${p.id}')">Del</button>
+      </td>
+    </tr>`;
+  }).join('');
+  // sync to main site (offline)
+  if (MODE==='offline') lsSet('projects', projects);
+}
+
+let editProjId=null, removeImg=false, removeVid=false;
+
+function openProjModal(proj=null) {
+  editProjId = proj?.id||null; removeImg=false; removeVid=false;
+  document.getElementById('projModalTitle').textContent = proj ? 'Edit Project' : 'Add Project';
+  document.getElementById('projId').value = proj?.id||'';
+  document.getElementById('pName').value = proj?.name||'';
+  document.getElementById('pCat').value = proj?.category||'Residential';
+  document.getElementById('pLoc').value = proj?.location||'';
+  document.getElementById('pYear').value = proj?.year||2024;
+  document.getElementById('pDesc').value = proj?.desc||'';
+  document.getElementById('pStatus').value = proj?.status||'Completed';
+  document.getElementById('pColor').value = proj?.color||'#1a1a18';
+  clearImg(); clearVid();
+
+  // show existing media (supports images[]/videos[] arrays from API)
+  const img0 = proj?.images?.length ? proj.images[0] : (proj?.image ? {path:proj.image,original:proj.imageOriginal||'Image'} : null);
+  const vid0 = proj?.videos?.length ? proj.videos[0] : (proj?.video ? {path:proj.video,original:proj.videoOriginal||'Video'} : null);
+  const imgUrl = img0 ? (MODE==='api'?API+img0.path:img0.path) : null;
+  const vidUrl = vid0 ? (MODE==='api'?API+vid0.path:vid0.path) : null;
+  const ie = document.getElementById('imgExisting');
+  const ve = document.getElementById('vidExisting');
+  if (imgUrl) {
+    document.getElementById('imgExistingThumb').src = imgUrl;
+    document.getElementById('imgExistingName').textContent = img0.original||'Image';
+    ie.style.display='flex';
+  } else { ie.style.display='none'; }
+  if (vidUrl) {
+    document.getElementById('vidExistingThumb').src = vidUrl;
+    document.getElementById('vidExistingName').textContent = vid0.original||'Video';
+    ve.style.display='flex';
+  } else { ve.style.display='none'; }
+
+  document.getElementById('projModal').classList.add('open');
+}
+
+function editProject(id) { openProjModal(projects.find(p=>p.id===id)); }
+
+function removeExistingImg(){document.getElementById('imgExisting').style.display='none';removeImg=true;}
+function removeExistingVid(){document.getElementById('vidExisting').style.display='none';removeVid=true;}
+
+// Image preview from folder
+function previewImg(input) {
+  const files = input.files; if (!files.length) return;
+  const file = files[0];
+  const url = URL.createObjectURL(file);
+  document.getElementById('imgIdle').style.display='none';
+  document.getElementById('imgPreview').style.display='block';
+  document.getElementById('imgPreviewEl').src=url;
+  document.getElementById('imgFileName').textContent=files.length>1?`${files.length} images selected`:file.name;
+  document.getElementById('imgFileSize').textContent=formatSize(file.size);
+  document.getElementById('imgExisting').style.display='none';
+}
+function clearImg(){
+  document.getElementById('imgFile').value='';
+  document.getElementById('imgIdle').style.display='';
+  document.getElementById('imgPreview').style.display='none';
+  document.getElementById('imgPreviewEl').src='';
+  document.getElementById('imgProgress').style.width='0';
+}
+
+// Video preview from folder
+function previewVid(input) {
+  const file = input.files[0]; if (!file) return;
+  const url = URL.createObjectURL(file);
+  document.getElementById('vidIdle').style.display='none';
+  document.getElementById('vidPreview').style.display='block';
+  document.getElementById('vidPreviewEl').src=url;
+  document.getElementById('vidFileName').textContent=file.name;
+  document.getElementById('vidFileSize').textContent=formatSize(file.size);
+  document.getElementById('vidExisting').style.display='none';
+}
+function clearVid(){
+  document.getElementById('vidFile').value='';
+  document.getElementById('vidIdle').style.display='';
+  document.getElementById('vidPreview').style.display='none';
+  document.getElementById('vidPreviewEl').src='';
+  document.getElementById('vidProgress').style.width='0';
+}
+
+function formatSize(b){if(b>1024*1024)return(b/1024/1024).toFixed(1)+'MB';if(b>1024)return(b/1024).toFixed(0)+'KB';return b+'B'}
+
+async function saveProject() {
+  const name = document.getElementById('pName').value.trim();
+  if (!name) { toast('Project name is required','err'); return; }
+  const btn = document.getElementById('saveProjBtn');
+  btn.innerHTML='<span class="spinner"></span>Saving...'; btn.disabled=true;
+
+  const imgFiles = Array.from(document.getElementById('imgFile').files);
+  const vidFile = document.getElementById('vidFile').files[0];
+  const imgFile = imgFiles[0]; // for offline base64 fallback
+
+  try {
+    if (MODE==='api') {
+      const fd = new FormData();
+      fd.append('name', name);
+      fd.append('category', document.getElementById('pCat').value);
+      fd.append('location', document.getElementById('pLoc').value);
+      fd.append('year', document.getElementById('pYear').value);
+      fd.append('desc', document.getElementById('pDesc').value);
+      fd.append('status', document.getElementById('pStatus').value);
+      fd.append('color', document.getElementById('pColor').value);
+      imgFiles.forEach(f => fd.append('images', f));
+      if (vidFile) fd.append('videos', vidFile);
+      if (removeImg) fd.append('removeImages', JSON.stringify([]));
+      if (removeVid) fd.append('removeVideos', JSON.stringify([]));
+
+      // Simulated progress
+      animProgress('imgProgress', imgFile?2000:0);
+      animProgress('vidProgress', vidFile?3000:0);
+
+      let result;
+      if (editProjId) result = await api('PUT',`/api/projects/${editProjId}`, fd, true);
+      else result = await api('POST','/api/projects', fd, true);
+      toast(editProjId?'Project updated!':'Project added!');
+    } else {
+      // offline — store base64 for image
+      const obj = {
+        id: editProjId||nid(),
+        name, category:document.getElementById('pCat').value,
+        location:document.getElementById('pLoc').value,
+        year:+document.getElementById('pYear').value,
+        desc:document.getElementById('pDesc').value,
+        status:document.getElementById('pStatus').value,
+        color:document.getElementById('pColor').value,
+        image:null, video:null
+      };
+      if (removeImg) obj.image=null;
+      if (removeVid) obj.video=null;
+      if (imgFile) {
+        obj.image = await toBase64(imgFile);
+        obj.imageOriginal = imgFile.name;
+      } else if (!removeImg) {
+        const ep = projects.find(p=>p.id===editProjId);
+        obj.image = ep?.image||null; obj.imageOriginal=ep?.imageOriginal||null;
+      }
+      if (vidFile) {
+        obj.video = await toBase64(vidFile);
+        obj.videoOriginal = vidFile.name;
+      } else if (!removeVid) {
+        const ep = projects.find(p=>p.id===editProjId);
+        obj.video = ep?.video||null; obj.videoOriginal=ep?.videoOriginal||null;
+      }
+      if (editProjId) {
+        const idx=projects.findIndex(p=>p.id===editProjId);
+        if(idx>-1) projects[idx]=obj; else projects.push(obj);
+      } else projects.push(obj);
+      lsSet('projects',projects);
+      toast(editProjId?'Project updated!':'Project added!');
+    }
+    closeModal('projModal');
+    await loadProjects();
+    loadDashboard();
+  } catch(e) { toast('Error: '+e.message,'err'); }
+  btn.textContent='Save Project'; btn.disabled=false;
+}
+
+function toBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file)})}
+function animProgress(id,ms){if(!ms)return;const el=document.getElementById(id);if(!el)return;el.style.width='0';setTimeout(()=>{el.style.transition=`width ${ms}ms ease`;el.style.width='90%';},50);setTimeout(()=>{el.style.width='100%';},ms);}
+
+async function deleteProject(id) {
+  if (!confirm('Delete this project permanently?')) return;
+  try {
+    if (MODE==='api') await api('DELETE',`/api/projects/${id}`);
+    else { projects=projects.filter(p=>p.id!==id); lsSet('projects',projects); }
+    await loadProjects(); loadDashboard(); toast('Project deleted');
+  } catch(e) { toast('Error: '+e.message,'err'); }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  REVIEWS
+// ═══════════════════════════════════════════════════════════
+let reviews=[];
+async function loadReviews(){
+  try{ reviews=MODE==='api'?await api('GET','/api/reviews'):lsGet('reviews'); renderReviews(); }
+  catch(e){ reviews=lsGet('reviews'); renderReviews(); }
+}
+function renderReviews(){
+  const tb=document.getElementById('revTbl');
+  if(!reviews.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No reviews yet</td></tr>';return;}
+  tb.innerHTML=reviews.map(r=>`<tr>
+    <td><strong style="color:var(--cream)">${r.author}</strong></td>
+    <td style="color:var(--muted)">${r.loc}</td>
+    <td style="color:var(--gold)">${'★'.repeat(+r.rating||5)}</td>
+    <td style="max-width:260px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)">${r.text}</div></td>
+    <td class="actions-cell"><button class="abt abt-edit" onclick="editReview('${r.id}')">Edit</button><button class="abt abt-del" onclick="deleteReview('${r.id}')">Del</button></td>
+  </tr>`).join('');
+  if(MODE==='offline') lsSet('reviews',reviews);
+}
+let editRevId=null;
+function openRevModal(rev=null){
+  editRevId=rev?.id||null;
+  document.getElementById('revModalTitle').textContent=rev?'Edit Review':'Add Review';
+  document.getElementById('revId').value=rev?.id||'';
+  document.getElementById('rName').value=rev?.author||'';
+  document.getElementById('rLoc').value=rev?.loc||'';
+  document.getElementById('rRating').value=rev?.rating||5;
+  document.getElementById('rInit').value=rev?.initials||'';
+  document.getElementById('rText').value=rev?.text||'';
+  document.getElementById('revModal').classList.add('open');
+}
+function editReview(id){openRevModal(reviews.find(r=>r.id===id));}
+async function saveReview(){
+  const name=document.getElementById('rName').value.trim(),text=document.getElementById('rText').value.trim();
+  if(!name||!text){toast('Name and review required','err');return;}
+  const obj={author:name,loc:document.getElementById('rLoc').value,rating:+document.getElementById('rRating').value,initials:document.getElementById('rInit').value||name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2),text};
+  try{
+    if(MODE==='api'){
+      if(editRevId) await api('PUT',`/api/reviews/${editRevId}`,obj);
+      else await api('POST','/api/reviews',obj);
+    }else{
+      if(editRevId){const i=reviews.findIndex(r=>r.id===editRevId);if(i>-1)reviews[i]={...reviews[i],...obj};}
+      else reviews.push({id:nid(),...obj});
+      lsSet('reviews',reviews);
+    }
+    closeModal('revModal'); await loadReviews(); toast(editRevId?'Review updated!':'Review added!');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+async function deleteReview(id){
+  if(!confirm('Delete this review?'))return;
+  try{
+    if(MODE==='api') await api('DELETE',`/api/reviews/${id}`);
+    else{reviews=reviews.filter(r=>r.id!==id);lsSet('reviews',reviews);}
+    await loadReviews(); toast('Review deleted');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SERVICES
+// ═══════════════════════════════════════════════════════════
+let services=[];
+async function loadServices(){
+  try{services=MODE==='api'?await api('GET','/api/services'):lsGet('services');renderServices();}
+  catch(e){services=lsGet('services');renderServices();}
+}
+function renderServices(){
+  const tb=document.getElementById('svcTbl');
+  if(!services.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">No services</td></tr>';return;}
+  tb.innerHTML=services.map(s=>`<tr>
+    <td><strong style="color:var(--cream)">${s.name}</strong></td>
+    <td style="color:var(--muted);max-width:260px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.desc}</div></td>
+    <td><span class="badge ${s.visible||s.visible==='true'?'b-done':'b-read'}">${s.visible||s.visible==='true'?'Visible':'Hidden'}</span></td>
+    <td class="actions-cell"><button class="abt abt-edit" onclick="editService('${s.id}')">Edit</button><button class="abt abt-del" onclick="deleteService('${s.id}')">Del</button></td>
+  </tr>`).join('');
+}
+let editSvcId=null;
+function openSvcModal(svc=null){editSvcId=svc?.id||null;document.getElementById('svcId').value=svc?.id||'';document.getElementById('svName').value=svc?.name||'';document.getElementById('svDesc').value=svc?.desc||'';document.getElementById('svVis').value=String(svc?.visible!==undefined?svc.visible:true);document.getElementById('svcModal').classList.add('open');}
+function editService(id){openSvcModal(services.find(s=>s.id===id));}
+async function saveService(){
+  const name=document.getElementById('svName').value.trim(),desc=document.getElementById('svDesc').value.trim();
+  if(!name||!desc){toast('Name and description required','err');return;}
+  const obj={name,desc,visible:document.getElementById('svVis').value==='true'};
+  try{
+    if(MODE==='api'){if(editSvcId)await api('PUT',`/api/services/${editSvcId}`,obj);else await api('POST','/api/services',obj);}
+    else{if(editSvcId){const i=services.findIndex(s=>s.id===editSvcId);if(i>-1)services[i]={...services[i],...obj};}else services.push({id:nid(),...obj});lsSet('services',services);}
+    closeModal('svcModal');await loadServices();toast('Service saved!');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+async function deleteService(id){
+  if(!confirm('Delete service?'))return;
+  try{if(MODE==='api')await api('DELETE',`/api/services/${id}`);else{services=services.filter(s=>s.id!==id);lsSet('services',services);}await loadServices();toast('Service deleted');}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INQUIRIES
+// ═══════════════════════════════════════════════════════════
+async function loadInquiries(){
+  try{
+    const inq=MODE==='api'?await api('GET','/api/inquiries'):lsGet('inquiries');
+    const newC=inq.filter(i=>i.status==='New').length;
+    const b=document.getElementById('inqBadge');
+    if(b){b.textContent=newC;b.style.display=newC?'':'none';}
+    document.getElementById('inqTbl').innerHTML=inq.slice().reverse().map(i=>`<tr>
+      <td><strong style="color:var(--cream)">${i.name}</strong></td>
+      <td style="color:var(--muted)">${i.email}</td>
+      <td><span class="badge b-new" style="font-size:9px">${i.type||'—'}</span></td>
+      <td style="color:var(--muted)">${i.budget||'—'}</td>
+      <td style="color:var(--muted)">${i.date}</td>
+      <td><span class="badge ${i.status==='New'?'b-new':'b-read'}">${i.status}</span></td>
+      <td class="actions-cell"><button class="abt abt-read" onclick="markRead('${i.id}')">✓ Read</button><button class="abt abt-del" onclick="delInq('${i.id}')">×</button></td>
+    </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">No inquiries yet</td></tr>';
+  }catch(e){}
+}
+async function markRead(id){
+  try{if(MODE==='api')await api('PUT',`/api/inquiries/${id}`,{status:'Read'});else{const inq=lsGet('inquiries').map(i=>i.id===id?{...i,status:'Read'}:i);lsSet('inquiries',inq);}await loadInquiries();}
+  catch(e){toast('Error','err');}
+}
+async function delInq(id){
+  if(!confirm('Delete this inquiry?'))return;
+  try{if(MODE==='api')await api('DELETE',`/api/inquiries/${id}`);else lsSet('inquiries',lsGet('inquiries').filter(i=>i.id!==id));await loadInquiries();toast('Deleted');}
+  catch(e){toast('Error','err');}
+}
+async function clearAllInq(){
+  if(!confirm('Clear ALL inquiries?'))return;
+  try{if(MODE==='api')await api('DELETE','/api/inquiries');else lsSet('inquiries',[]);await loadInquiries();toast('Cleared');}
+  catch(e){toast('Error','err');}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════════════════
+async function loadSettings(){
+  try{
+    const s=MODE==='api'?await api('GET','/api/settings'):lsGet('settings')[0]||{};
+    document.getElementById('sName').value=s.studioName||'The Cubik Spaces';
+    document.getElementById('sTagline').value=s.tagline||'';
+    document.getElementById('sEmail').value=s.email||'';
+    document.getElementById('sPhone').value=s.phone||'';
+    document.getElementById('sIG').value=s.instagram||'';
+  }catch(e){}
+}
+async function saveSettings(){
+  const body={studioName:document.getElementById('sName').value,tagline:document.getElementById('sTagline').value,email:document.getElementById('sEmail').value,phone:document.getElementById('sPhone').value,instagram:document.getElementById('sIG').value};
+  try{if(MODE==='api')await api('PUT','/api/settings',body);else lsSet('settings',[{id:'main',...body}]);toast('Settings saved!');}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+async function changePass(){
+  const c=document.getElementById('curP').value,n=document.getElementById('newP').value,cf=document.getElementById('conP').value;
+  if(n!==cf){toast('Passwords do not match','err');return;}
+  if(n.length<6){toast('Min 6 characters','err');return;}
+  try{if(MODE==='api')await api('PUT','/api/auth/password',{currentPassword:c,newPassword:n});else if(c!=='cubik2024'){toast('Wrong current password','err');return;}toast('Password updated!');['curP','newP','conP'].forEach(id=>document.getElementById(id).value='');}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+async function reconnectAPI(){
+  API=document.getElementById('apiUrlInput').value.trim();
+  localStorage.setItem('cubik_api',API);
+  const ok=await checkAPI();
+  toast(ok?'API connected!':'Cannot reach API — offline mode','err'[ok?'':0]);
+  if(ok){await loadProjects();await loadReviews();await loadServices();await loadInquiries();await loadDashboard();}
+}
+function exportData(){
+  const d={projects,reviews,services,inquiries:lsGet('inquiries')};
+  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='cubik_data.json';a.click();toast('Exported!');}
+
+// ═══════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
+
+function updateBadge(){}
+
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(type?' '+type:'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// Drag & drop support
+['imgZone','vidZone'].forEach(zid=>{
+  const z=document.getElementById(zid);
+  if(!z)return;
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dragover')});
+  z.addEventListener('dragleave',()=>z.classList.remove('dragover'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault();z.classList.remove('dragover');
+    const file=e.dataTransfer.files[0];if(!file)return;
+    const inp=z.querySelector('input[type="file"]');
+    const dt=new DataTransfer();dt.items.add(file);inp.files=dt.files;
+    inp.dispatchEvent(new Event('change'));
+  });
+});
+
+// Check API on load
+checkAPI();
+document.getElementById('topDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+</script>
+</body>
+</html>

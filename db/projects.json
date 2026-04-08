@@ -1,0 +1,98 @@
+[
+  {
+    "id": "60e67c43-d63e-4b20-bf73-77abf00a263d",
+    "name": "The Serene Residence",
+    "category": "Residential",
+    "location": "Mumbai, India",
+    "year": 2024,
+    "desc": "A contemporary masterpiece blending warmth with minimalism. Soft neutrals, natural textures, and bespoke furniture come together to create a sanctuary of quiet luxury where every corner tells a story.",
+    "status": "Featured",
+    "color": "#1e1a15",
+    "images": [
+      {"path": "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1400&q=85", "original": "living-room.jpg"},
+      {"path": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1400&q=85", "original": "bedroom.jpg"},
+      {"path": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1400&q=85", "original": "kitchen.jpg"},
+      {"path": "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=1400&q=85", "original": "dining.jpg"},
+      {"path": "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1400&q=85", "original": "bathroom.jpg"}
+    ],
+    "videos": [
+      {"path": "https://www.youtube.com/embed/nNMTNBSPTCY", "original": "walkthrough.mp4"}
+    ],
+    "createdAt": "2024-03-15T10:00:00.000Z"
+  },
+  {
+    "id": "397a6ffa-0fde-49e2-a127-33d0683247ac",
+    "name": "Azure Corporate Hub",
+    "category": "Commercial",
+    "location": "Bangalore, India",
+    "year": 2023,
+    "desc": "Open, collaborative workspace redefining corporate culture. A seamless fusion of productivity and design, featuring ergonomic zones, biophilic elements, and a dynamic social hub that inspires creativity.",
+    "status": "Completed",
+    "color": "#0d1520",
+    "images": [
+      {"path": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1400&q=85", "original": "open-office.jpg"},
+      {"path": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1400&q=85", "original": "meeting-room.jpg"},
+      {"path": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=85", "original": "lobby.jpg"},
+      {"path": "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1400&q=85", "original": "break-area.jpg"}
+    ],
+    "videos": [],
+    "createdAt": "2023-11-10T10:00:00.000Z"
+  },
+  {
+    "id": "fd7fd4e3-0932-4839-9280-4393f8f5402d",
+    "name": "Opulent Villa Retreat",
+    "category": "Luxury",
+    "location": "Goa, India",
+    "year": 2024,
+    "desc": "A celebration of stone, wood, and light in perfect harmony. Every surface and vista was curated to evoke timeless grandeur fused with tropical ease — a villa that lives as beautifully as it photographs.",
+    "status": "Featured",
+    "color": "#1a1015",
+    "images": [
+      {"path": "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1400&q=85", "original": "master-bedroom.jpg"},
+      {"path": "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=1400&q=85", "original": "living.jpg"},
+      {"path": "https://images.unsplash.com/photo-1573120987647-c8c2deb98ed4?w=1400&q=85", "original": "bathroom.jpg"},
+      {"path": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1400&q=85", "original": "dining.jpg"},
+      {"path": "https://images.unsplash.com/photo-1582037928769-181f2644ecb7?w=1400&q=85", "original": "pool-deck.jpg"},
+      {"path": "https://images.unsplash.com/photo-1567767292278-a204ad2a0b9b?w=1400&q=85", "original": "suite.jpg"}
+    ],
+    "videos": [
+      {"path": "https://www.youtube.com/embed/0UjgDGqxEaM", "original": "villa-tour.mp4"}
+    ],
+    "createdAt": "2024-01-22T10:00:00.000Z"
+  },
+  {
+    "id": "b9c3e1d2-7f4a-4b8c-9e0d-5a2f6c1d3e7b",
+    "name": "The Minimalist Loft",
+    "category": "Residential",
+    "location": "Delhi, India",
+    "year": 2023,
+    "desc": "Less is more — every element chosen with surgical precision. A monochrome palette punctuated by raw concrete, warm oak accents, and curated art creates an urban sanctuary that breathes serenity.",
+    "status": "Completed",
+    "color": "#161616",
+    "images": [
+      {"path": "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?w=1400&q=85", "original": "loft-living.jpg"},
+      {"path": "https://images.unsplash.com/photo-1536437075651-01d675422e88?w=1400&q=85", "original": "bedroom.jpg"},
+      {"path": "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=1400&q=85", "original": "kitchen.jpg"},
+      {"path": "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=1400&q=85", "original": "workspace.jpg"}
+    ],
+    "videos": [],
+    "createdAt": "2023-08-05T10:00:00.000Z"
+  },
+  {
+    "id": "a4b17f7b-4856-42b4-8d7c-73a5ec77b534",
+    "name": "The Residence",
+    "category": "Residential",
+    "location": "Ahmedabad, India",
+    "year": 2024,
+    "desc": "A thoughtful transformation that balances modern aesthetics with the warmth of family living. Custom millwork, hand-picked finishes, and layered lighting define this intimate home.",
+    "status": "Completed",
+    "color": "#1a1a10",
+    "images": [
+      {"path": "/uploads/images/2cf55966-35a0-486c-bba2-d1892ae76324.png", "original": "residence.png"},
+      {"path": "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=1400&q=85", "original": "living-room.jpg"},
+      {"path": "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1400&q=85", "original": "kitchen.jpg"}
+    ],
+    "videos": [],
+    "createdAt": "2026-04-07T10:14:20.105Z"
+  }
+]

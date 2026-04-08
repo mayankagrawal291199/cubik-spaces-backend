@@ -1,0 +1,44 @@
+[
+  {
+    "id": "03c2908a-3231-4c6a-acc2-39a34f54bb68",
+    "name": "Residential Design",
+    "desc": "Transform your home into a sanctuary of comfort and elegance.",
+    "visible": true,
+    "order": 1
+  },
+  {
+    "id": "97bd9431-0986-4c27-af7b-976b5906bc77",
+    "name": "Commercial Spaces",
+    "desc": "Design offices and retail spaces that enhance brand identity.",
+    "visible": true,
+    "order": 2
+  },
+  {
+    "id": "aee4b275-c463-43d2-98e7-9f69b427e96d",
+    "name": "3D Visualization",
+    "desc": "Photo-realistic renders and virtual walkthroughs.",
+    "visible": true,
+    "order": 3
+  },
+  {
+    "id": "5a517f14-28ef-4af2-a1fc-dbaa78690ce8",
+    "name": "Lighting Design",
+    "desc": "Strategic lighting that transforms mood and highlights architecture.",
+    "visible": true,
+    "order": 4
+  },
+  {
+    "id": "bd97af4b-96da-4c14-abec-d8d635ad0e9a",
+    "name": "Furniture Curation",
+    "desc": "Custom furniture design and premium curation from global artisans.",
+    "visible": true,
+    "order": 5
+  },
+  {
+    "id": "784da88c-9448-4645-bc7d-32e6ee78c1d1",
+    "name": "Project Management",
+    "desc": "End-to-end coordination ensuring timelines and quality are met.",
+    "visible": true,
+    "order": 6
+  }
+]
